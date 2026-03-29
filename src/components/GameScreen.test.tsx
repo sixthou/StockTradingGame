@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from '../App';
 import { useGameStore } from '../state/gameStore';
 
@@ -26,6 +26,10 @@ describe('GameScreen load error state', () => {
   beforeEach(() => {
     useGameStore.setState((useGameStore as any).getInitialState());
     vi.resetAllMocks();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('shows retry and home buttons, and returns to start screen from error state', async () => {
@@ -77,7 +81,7 @@ describe('GameScreen load error state', () => {
     render(<App />);
 
     await waitFor(() => {
-      expect(fetchDailyCandles).toHaveBeenCalledWith('AAPL', '2021-01-01', '2024-12-31', undefined);
+      expect(fetchDailyCandles).toHaveBeenCalledWith('AAPL', '2021-01-02', '2024-12-31', undefined);
     });
     expect(await screen.findByRole('button', { name: '게임 종료' })).toBeInTheDocument();
   });
@@ -227,5 +231,37 @@ describe('GameScreen load error state', () => {
     expect(useGameStore.getState().portfolio.cash).toBe(30);
     expect(useGameStore.getState().challengeStatus).toBe('success');
     expect(useGameStore.getState().challengeMessage).toBe('챌린지 성공: 목표 배당 횟수를 달성했습니다.');
+  });
+
+  it('ends the game instead of loading more when the last loaded candle is today', async () => {
+    vi.mocked(fetchDailyCandles).mockResolvedValue([
+      { date: '2023-03-28', open: 90, high: 95, low: 88, close: 94, volume: 1000 },
+      { date: '2026-03-28', open: 100, high: 101, low: 99, close: 100, volume: 2000 },
+      { date: '2026-03-29', open: 101, high: 102, low: 100, close: 101, volume: 2100 },
+    ]);
+    vi.mocked(fetchMarketEvents).mockResolvedValue([]);
+
+    useGameStore.getState().startGame({
+      stockSymbol: 'AAPL',
+      startDate: '2026-03-28',
+      endDate: '2027-03-28',
+      twelveDataApiKey: 'test-key',
+      initialCash: 1000000,
+      monthlySalary: 0,
+      salaryDay: 1,
+      mode: 'free',
+    });
+
+    render(<App />);
+
+    await screen.findByRole('button', { name: /Next Day/ });
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-03-29T12:00:00Z'));
+    fireEvent.click(screen.getByRole('button', { name: /Next Day/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Next Day/ }));
+
+    expect(useGameStore.getState().screen).toBe('result');
+    expect(fetchDailyCandles).toHaveBeenCalledTimes(1);
+    vi.useRealTimers();
   });
 });

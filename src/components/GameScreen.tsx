@@ -12,20 +12,36 @@ import { TradePanel } from './TradePanel';
 import { EventPanel } from './EventPanel';
 import { TimeControls } from './TimeControls';
 
+function formatDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function parseDate(date: string): Date {
+  const [year, month, day] = date.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
 function addYears(date: string, years: number): string {
-  const value = new Date(`${date}T00:00:00`);
+  const value = parseDate(date);
   value.setFullYear(value.getFullYear() + years);
-  return value.toISOString().split('T')[0];
+  return formatDate(value);
 }
 
 function addDays(date: string, days: number): string {
-  const value = new Date(`${date}T00:00:00`);
+  const value = parseDate(date);
   value.setDate(value.getDate() + days);
-  return value.toISOString().split('T')[0];
+  return formatDate(value);
 }
 
 function minDate(a: string, b: string): string {
   return a <= b ? a : b;
+}
+
+function getTodayDate(): string {
+  return formatDate(new Date());
 }
 
 export function GameScreen() {
@@ -200,7 +216,10 @@ export function GameScreen() {
     }
 
     const lastLoaded = dailyCandles[dailyCandles.length - 1];
-    if (!lastLoaded || lastLoaded.date >= config.endDate || isLoadingMore) {
+    const today = getTodayDate();
+    if (!lastLoaded || lastLoaded.date >= config.endDate || lastLoaded.date >= today || isLoadingMore) {
+      setPlaying(false);
+      setScreen('result');
       return;
     }
 
@@ -210,7 +229,10 @@ export function GameScreen() {
       if (moreCandles.length > 0) {
         setDailyCandles([...dailyCandles, ...moreCandles]);
         setDayIndex(nextIndex);
+        return;
       }
+      setPlaying(false);
+      setScreen('result');
     } catch (error) {
       console.error('Failed to load more data:', error);
       setLoadError(true);
@@ -218,7 +240,7 @@ export function GameScreen() {
     } finally {
       setIsLoadingMore(false);
     }
-  }, [config, dailyCandles, dayIndex, isLoadingMore, loadMoreCandles, setDailyCandles, setDayIndex, setPlaying]);
+  }, [config, dailyCandles, dayIndex, isLoadingMore, loadMoreCandles, setDailyCandles, setDayIndex, setPlaying, setScreen]);
 
   useEffect(() => {
     if (!isPlaying) {
