@@ -1,5 +1,6 @@
 import { theme } from '../styles/theme';
 import { useGameStore } from '../state/gameStore';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 const SPEEDS = [1, 2, 5];
 
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function TimeControls({ onNextDay, onEndGame, isLoadingMore }: Props) {
+  const isMobile = useIsMobile();
   const isPlaying = useGameStore((s) => s.isPlaying);
   const playbackSpeed = useGameStore((s) => s.playbackSpeed);
   const setPlaying = useGameStore((s) => s.setPlaying);
@@ -20,16 +22,18 @@ export function TimeControls({ onNextDay, onEndGame, isLoadingMore }: Props) {
 
   return (
     <div style={{
-      display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 16,
+      display: 'flex', justifyContent: 'center', alignItems: 'center', gap: isMobile ? 8 : 16,
+      flexWrap: isMobile ? 'nowrap' : 'wrap',
       background: theme.bg.panel, padding: 8, borderRadius: theme.radius,
       border: `1px solid ${theme.border}`,
+      overflowX: 'auto',
     }}>
       <button
         onClick={() => dayIndex > 0 && setDayIndex(dayIndex - 1)}
         disabled={dayIndex === 0 || isLoadingMore}
-        style={{ background: 'none', border: 'none', color: dayIndex > 0 ? theme.text.secondary : theme.text.muted, cursor: 'pointer', fontSize: 12 }}
+        style={{ background: 'none', border: 'none', color: dayIndex > 0 ? theme.text.secondary : theme.text.muted, cursor: 'pointer', fontSize: 12, minWidth: 'auto', whiteSpace: 'nowrap', flexShrink: 0 }}
       >
-        ◀ Prev Day
+        {isMobile ? '◀ Prev' : '◀ Prev Day'}
       </button>
 
       <button
@@ -37,13 +41,13 @@ export function TimeControls({ onNextDay, onEndGame, isLoadingMore }: Props) {
         disabled={isLoadingMore}
         style={{
           background: theme.accent, color: 'white', border: 'none',
-          padding: '4px 16px', borderRadius: theme.radius, cursor: 'pointer', fontSize: 12,
+          padding: '6px 12px', borderRadius: theme.radius, cursor: 'pointer', fontSize: 12, minWidth: 'auto', whiteSpace: 'nowrap', flexShrink: 0,
         }}
       >
         {isPlaying ? '⏸ Pause' : '▶ Auto'}
       </button>
 
-      <div style={{ display: 'flex', gap: 6 }}>
+      <div style={{ display: 'flex', gap: 6, minWidth: 'auto', justifyContent: 'center', flexShrink: 0 }}>
         {SPEEDS.map((speed) => (
           <button
             key={speed}
@@ -62,19 +66,19 @@ export function TimeControls({ onNextDay, onEndGame, isLoadingMore }: Props) {
       <button
         onClick={onNextDay}
         disabled={dailyCandles.length === 0 || isLoadingMore}
-        style={{ background: 'none', border: 'none', color: isLoadingMore ? theme.text.muted : theme.text.secondary, cursor: 'pointer', fontSize: 12 }}
+        style={{ background: 'none', border: 'none', color: isLoadingMore ? theme.text.muted : theme.text.secondary, cursor: 'pointer', fontSize: 12, minWidth: 'auto', whiteSpace: 'nowrap', flexShrink: 0 }}
       >
-        {isLoadingMore ? '불러오는 중...' : 'Next Day ▶'}
+        {isLoadingMore ? '불러오는 중...' : isMobile ? 'Next ▶' : 'Next Day ▶'}
       </button>
 
       <button
         onClick={onEndGame}
         style={{
           background: theme.bg.primary, color: theme.text.primary, border: `1px solid ${theme.border}`,
-          padding: '4px 14px', borderRadius: theme.radius, cursor: 'pointer', fontSize: 12,
+          padding: '6px 12px', borderRadius: theme.radius, cursor: 'pointer', fontSize: 12, minWidth: 'auto', whiteSpace: 'nowrap', flexShrink: 0,
         }}
       >
-        게임 종료
+        {isMobile ? 'End' : '게임 종료'}
       </button>
     </div>
   );

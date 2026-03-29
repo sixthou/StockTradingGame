@@ -11,6 +11,7 @@ import { PortfolioPanel } from './PortfolioPanel';
 import { TradePanel } from './TradePanel';
 import { EventPanel } from './EventPanel';
 import { TimeControls } from './TimeControls';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 function formatDate(date: Date): string {
   const year = date.getFullYear();
@@ -45,6 +46,7 @@ function getTodayDate(): string {
 }
 
 export function GameScreen() {
+  const isMobile = useIsMobile();
   const config = useGameStore((s) => s.config);
   const dayIndex = useGameStore((s) => s.dayIndex);
   const dailyCandles = useGameStore((s) => s.dailyCandles);
@@ -321,22 +323,37 @@ export function GameScreen() {
   }
 
   return (
-    <div style={{ padding: 4, display: 'flex', flexDirection: 'column', gap: 4, height: '100vh', boxSizing: 'border-box' }}>
+    <div style={{ padding: 4, display: 'flex', flexDirection: 'column', gap: 4, height: isMobile ? 'auto' : '100vh', minHeight: '100vh', boxSizing: 'border-box' }}>
       <TopBar />
 
-      <div style={{ display: 'flex', gap: 4, flex: 1, overflow: 'hidden' }}>
-        <div style={{ flex: 3, display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <div style={{ display: 'flex', gap: 4, flex: 1, overflow: isMobile ? 'visible' : 'hidden', flexDirection: isMobile ? 'column' : 'row', paddingBottom: isMobile ? 300 : 0 }}>
+        <div style={{ flex: isMobile ? 'none' : 3, display: 'flex', flexDirection: 'column', gap: 4, height: isMobile ? '56vh' : 'auto', minHeight: isMobile ? 360 : 0, maxHeight: isMobile ? 620 : 'none' }}>
           <ChartPanel />
         </div>
 
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4, minWidth: 200 }}>
+        <div style={{ flex: isMobile ? 'none' : 1, display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr', gap: 4, minWidth: isMobile ? 0 : 200 }}>
           <PortfolioPanel />
-          <TradePanel />
           <EventPanel />
+          {!isMobile && <TradePanel />}
         </div>
       </div>
 
-      <TimeControls onNextDay={handleNextDay} onEndGame={handleEndGame} isLoadingMore={isLoadingMore} />
+      {!isMobile && <TimeControls onNextDay={handleNextDay} onEndGame={handleEndGame} isLoadingMore={isLoadingMore} />}
+      {isMobile && (
+        <div style={{
+          position: 'fixed',
+          left: 4,
+          right: 4,
+          bottom: 4,
+          zIndex: 20,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 4,
+        }}>
+          <TimeControls onNextDay={handleNextDay} onEndGame={handleEndGame} isLoadingMore={isLoadingMore} />
+          <TradePanel compact />
+        </div>
+      )}
     </div>
   );
 }

@@ -3,7 +3,11 @@ import { theme } from '../styles/theme';
 import { useGameStore } from '../state/gameStore';
 import { formatUsd } from '../utils/currency';
 
-export function TradePanel() {
+interface TradePanelProps {
+  compact?: boolean;
+}
+
+export function TradePanel({ compact = false }: TradePanelProps) {
   const [qty, setQty] = useState('');
   const [memo, setMemo] = useState('');
   const [error, setError] = useState('');
@@ -51,28 +55,33 @@ export function TradePanel() {
     executeMarketTrade(type, q);
   };
 
+  const buttonPadding = compact ? 10 : 6;
+  const actionFontSize = compact ? 12 : 11;
+  const subActionFontSize = compact ? 11 : 10;
+
   return (
     <div style={{
       background: theme.bg.panel, padding: 10, borderRadius: theme.radius,
       border: `1px solid ${theme.border}`, color: theme.text.secondary,
+      boxShadow: compact ? '0 -8px 24px rgba(0, 0, 0, 0.28)' : 'none',
     }}>
       <div style={{ fontSize: 10, color: theme.accent, fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '1px' }}>
         Trade
       </div>
       <div style={{ display: 'flex', gap: 4, marginBottom: 6 }}>
         <button onClick={() => handleTrade('buy')} style={{
-          flex: 1, background: '#238636', color: 'white', border: 'none', padding: 6, borderRadius: theme.radius, fontWeight: 600, fontSize: 11, cursor: 'pointer',
+          flex: 1, background: '#238636', color: 'white', border: 'none', padding: buttonPadding, borderRadius: theme.radius, fontWeight: 600, fontSize: actionFontSize, cursor: 'pointer',
         }}>BUY</button>
         <button onClick={() => handleTrade('sell')} style={{
-          flex: 1, background: '#da3633', color: 'white', border: 'none', padding: 6, borderRadius: theme.radius, fontWeight: 600, fontSize: 11, cursor: 'pointer',
+          flex: 1, background: '#da3633', color: 'white', border: 'none', padding: buttonPadding, borderRadius: theme.radius, fontWeight: 600, fontSize: actionFontSize, cursor: 'pointer',
         }}>SELL</button>
       </div>
       <div style={{ display: 'flex', gap: 4, marginBottom: 6 }}>
         <button onClick={() => executeMarketTrade('buy', maxBuy)} style={{
-          flex: 1, background: theme.bg.primary, color: theme.up, border: `1px solid ${theme.border}`, padding: 6, borderRadius: theme.radius, fontWeight: 600, fontSize: 10, cursor: 'pointer',
+          flex: 1, background: theme.bg.primary, color: theme.up, border: `1px solid ${theme.border}`, padding: buttonPadding, borderRadius: theme.radius, fontWeight: 600, fontSize: subActionFontSize, cursor: 'pointer',
         }}>MAX BUY</button>
         <button onClick={() => executeMarketTrade('sell', maxSell)} style={{
-          flex: 1, background: theme.bg.primary, color: theme.down, border: `1px solid ${theme.border}`, padding: 6, borderRadius: theme.radius, fontWeight: 600, fontSize: 10, cursor: 'pointer',
+          flex: 1, background: theme.bg.primary, color: theme.down, border: `1px solid ${theme.border}`, padding: buttonPadding, borderRadius: theme.radius, fontWeight: 600, fontSize: subActionFontSize, cursor: 'pointer',
         }}>MAX SELL</button>
       </div>
       <input
@@ -82,7 +91,7 @@ export function TradePanel() {
         onChange={(e) => setQty(e.target.value)}
         style={{
           width: '100%', background: theme.bg.primary, border: `1px solid ${theme.border}`,
-          color: theme.text.primary, padding: '4px 8px', borderRadius: 4, fontSize: 10, marginBottom: 4, boxSizing: 'border-box',
+          color: theme.text.primary, padding: compact ? '8px 10px' : '4px 8px', borderRadius: 4, fontSize: compact ? 12 : 10, marginBottom: 4, boxSizing: 'border-box',
         }}
       />
       <input
@@ -91,7 +100,7 @@ export function TradePanel() {
         onChange={(e) => setMemo(e.target.value)}
         style={{
           width: '100%', background: theme.bg.primary, border: `1px solid ${theme.border}`,
-          color: theme.text.primary, padding: '4px 8px', borderRadius: 4, fontSize: 10, boxSizing: 'border-box',
+          color: theme.text.primary, padding: compact ? '8px 10px' : '4px 8px', borderRadius: 4, fontSize: compact ? 12 : 10, boxSizing: 'border-box',
         }}
       />
       {error && <div style={{ color: theme.down, fontSize: 10, marginTop: 4 }}>{error}</div>}

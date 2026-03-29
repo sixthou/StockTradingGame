@@ -5,6 +5,7 @@ import { isSupportedUsSymbol, searchSymbol, SymbolSearchResult } from '../data/y
 import { Challenge } from '../types';
 import { ChallengeList } from './ChallengeList';
 import { formatUsd, parseWholeDollarInput } from '../utils/currency';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 const TWELVE_DATA_KEY_STORAGE_KEY = 'stock-trading-game-twelve-data-key';
 
@@ -46,6 +47,7 @@ function randomDateBetween(start: Date, end: Date): string {
 
 export function StartScreen() {
   const startGame = useGameStore((s) => s.startGame);
+  const isMobile = useIsMobile();
   const today = useMemo(() => new Date(), []);
   const latestPlayableDate = useMemo(() => {
     const yesterday = new Date(today);
@@ -199,7 +201,7 @@ export function StartScreen() {
   };
 
   return (
-    <div style={{ maxWidth: 600, margin: '0 auto', padding: '40px 20px' }}>
+    <div style={{ maxWidth: isMobile ? '100%' : 680, margin: '0 auto', padding: isMobile ? '20px 16px 28px' : '40px 20px' }}>
       <h1 style={{ textAlign: 'center', marginBottom: 8 }}>Stock Trading Game</h1>
       <p style={{ textAlign: 'center', color: theme.text.muted, marginBottom: 32 }}>
         과거 주식 데이터로 매매를 연습하세요
@@ -242,7 +244,7 @@ export function StartScreen() {
           </div>
           <div>
             <label style={labelStyle}>Twelve Data API Key</label>
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div style={{ display: 'flex', gap: 8, flexDirection: isMobile ? 'column' : 'row' }}>
               <input
                 type={showApiKey ? 'text' : 'password'}
                 style={{ ...inputStyle, flex: 1 }}
@@ -255,13 +257,13 @@ export function StartScreen() {
               />
               <button
                 onClick={() => setShowApiKey((v) => !v)}
-                style={{ background: theme.bg.primary, color: theme.text.primary, border: `1px solid ${theme.border}`, padding: '8px 16px', borderRadius: theme.radius, cursor: 'pointer' }}
+                style={{ background: theme.bg.primary, color: theme.text.primary, border: `1px solid ${theme.border}`, padding: '8px 16px', borderRadius: theme.radius, cursor: 'pointer', width: isMobile ? '100%' : 'auto' }}
               >
                 {showApiKey ? '숨기기' : '보기'}
               </button>
             </div>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, marginTop: 10, fontSize: 12 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'flex-start' : 'center', gap: 12, marginTop: 10, fontSize: 12 }}>
             <span style={{ color: theme.text.muted }}>무료 키를 발급받아 입력한 뒤 시작하세요.</span>
             <a
               href="https://twelvedata.com/apikey"
@@ -286,7 +288,7 @@ export function StartScreen() {
           {/* Stock Search */}
           <div>
             <label style={labelStyle}>종목 검색</label>
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div style={{ display: 'flex', gap: 8, flexDirection: isMobile ? 'column' : 'row' }}>
               <input
                 style={{ ...inputStyle, flex: 1 }}
                 placeholder="AAPL, MSFT, NVDA, ..."
@@ -300,7 +302,7 @@ export function StartScreen() {
               <button
                 onClick={handleSearch}
                 disabled={searching || !twelveDataApiKey.trim()}
-                style={{ background: theme.accent, color: 'white', border: 'none', padding: '8px 16px', borderRadius: theme.radius, cursor: 'pointer' }}
+                style={{ background: theme.accent, color: 'white', border: 'none', padding: '8px 16px', borderRadius: theme.radius, cursor: 'pointer', width: isMobile ? '100%' : 'auto' }}
               >
                 {searching ? '...' : '검색'}
               </button>
@@ -346,7 +348,7 @@ export function StartScreen() {
           {/* Start Date */}
           <div>
             <label style={labelStyle}>시작일</label>
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div style={{ display: 'flex', gap: 8, flexDirection: isMobile ? 'column' : 'row' }}>
               <input
                 ref={startDateInputRef}
                 type="date"
@@ -361,7 +363,7 @@ export function StartScreen() {
               <button
                 type="button"
                 onClick={handleRandomDate}
-                style={{ background: theme.accent, color: 'white', border: 'none', padding: '8px 12px', borderRadius: theme.radius, cursor: 'pointer' }}
+                style={{ background: theme.accent, color: 'white', border: 'none', padding: '8px 12px', borderRadius: theme.radius, cursor: 'pointer', width: isMobile ? '100%' : 'auto' }}
               >
                 랜덤
               </button>
@@ -398,7 +400,7 @@ export function StartScreen() {
           </div>
 
           {/* Salary */}
-          <div style={{ display: 'flex', gap: 12 }}>
+          <div style={{ display: 'flex', gap: 12, flexDirection: isMobile ? 'column' : 'row' }}>
             <div style={{ flex: 2 }}>
               <label style={labelStyle}>월급 (USD, 0=비활성)</label>
               <input
@@ -422,7 +424,7 @@ export function StartScreen() {
             style={{
               background: selectedSymbol ? theme.accent : theme.border,
               color: 'white', border: 'none', padding: '12px 24px', borderRadius: theme.radius,
-              cursor: selectedSymbol ? 'pointer' : 'not-allowed', fontWeight: 600, fontSize: 14, marginTop: 8,
+              cursor: selectedSymbol ? 'pointer' : 'not-allowed', fontWeight: 600, fontSize: 14, marginTop: 8, width: '100%',
             }}
           >
             게임 시작

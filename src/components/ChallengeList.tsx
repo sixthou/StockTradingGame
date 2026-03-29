@@ -2,14 +2,17 @@ import { Challenge } from '../types';
 import { challenges } from '../data/challenges';
 import { theme } from '../styles/theme';
 import { formatUsd } from '../utils/currency';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 interface Props {
   onSelect: (challenge: Challenge) => void;
 }
 
 export function ChallengeList({ onSelect }: Props) {
+  const isMobile = useIsMobile();
+
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
+    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: 12 }}>
       {challenges.map((c) => (
         <button
           key={c.id}
@@ -22,6 +25,7 @@ export function ChallengeList({ onSelect }: Props) {
             color: theme.text.primary,
             cursor: 'pointer',
             textAlign: 'left',
+            minHeight: isMobile ? 0 : 132,
           }}
         >
           <div style={{ fontWeight: 600, marginBottom: 4 }}>{c.title}</div>

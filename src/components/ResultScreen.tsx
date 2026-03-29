@@ -5,8 +5,10 @@ import { useGameStore } from '../state/gameStore';
 import { formatUsd } from '../utils/currency';
 import { getChallengeById } from '../data/challenges';
 import { evaluateChallengeProgress } from '../engine/challenges';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 export function ResultScreen() {
+  const isMobile = useIsMobile();
   const portfolio = useGameStore((s) => s.portfolio);
   const config = useGameStore((s) => s.config);
   const dailyCandles = useGameStore((s) => s.dailyCandles);
@@ -94,7 +96,7 @@ export function ResultScreen() {
   };
 
   return (
-    <div style={{ maxWidth: 700, margin: '0 auto', padding: '24px 20px' }}>
+    <div style={{ maxWidth: isMobile ? '100%' : 700, margin: '0 auto', padding: isMobile ? '20px 16px 28px' : '24px 20px' }}>
       <h2 style={{ textAlign: 'center', marginBottom: 4 }}>게임 결과</h2>
       <p style={{ textAlign: 'center', color: theme.text.muted, marginBottom: 24, fontSize: 12 }}>
         {config?.stockSymbol} · {config?.startDate} ~ {dailyCandles[dayIndex]?.date}
@@ -117,7 +119,7 @@ export function ResultScreen() {
       )}
 
       {/* Metrics Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, minmax(0, 1fr))' : 'repeat(4, 1fr)', gap: 8, marginBottom: 24 }}>
         {[
           { label: '총 수익률', value: `${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}%`, color: totalReturn >= 0 ? theme.up : theme.down },
           { label: '최종 자산', value: formatUsd(totalValue), color: theme.text.primary },
@@ -159,7 +161,8 @@ export function ResultScreen() {
           <div style={{ maxHeight: 200, overflow: 'auto' }}>
             {trades.map((t, i) => (
               <div key={i} style={{
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center',
+                flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 4 : 0,
                 padding: '6px 0', borderBottom: `1px solid ${theme.border}`, fontSize: 11,
               }}>
                 <div>
@@ -170,7 +173,7 @@ export function ResultScreen() {
                     {t.qty}주 @ {formatUsd(t.price)}
                   </span>
                 </div>
-                <div style={{ textAlign: 'right' }}>
+                <div style={{ textAlign: isMobile ? 'left' : 'right' }}>
                   <div style={{ color: theme.text.muted, fontSize: 10 }}>{t.timestamp}</div>
                   {t.memo && <div style={{ color: theme.text.muted, fontSize: 10, fontStyle: 'italic' }}>{t.memo}</div>}
                 </div>

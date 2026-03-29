@@ -1,8 +1,10 @@
 import { theme } from '../styles/theme';
 import { useGameStore } from '../state/gameStore';
 import { formatUsd } from '../utils/currency';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 export function TopBar() {
+  const isMobile = useIsMobile();
   const config = useGameStore((s) => s.config);
   const currentDate = useGameStore((s) => s.currentDate);
   const playbackSpeed = useGameStore((s) => s.playbackSpeed);
@@ -23,7 +25,8 @@ export function TopBar() {
 
   return (
     <div style={{
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      display: 'flex', alignItems: isMobile ? 'flex-start' : 'center', justifyContent: 'space-between',
+      flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 8 : 12,
       background: theme.bg.panel, padding: '8px 12px', borderRadius: theme.radius,
       border: `1px solid ${theme.border}`,
     }}>
@@ -41,7 +44,7 @@ export function TopBar() {
           {isUp ? '+' : ''}{change.toFixed(2)}%
         </span>
       </div>
-      <div style={{ color: theme.text.muted, fontSize: 10 }}>
+      <div style={{ color: theme.text.muted, fontSize: 10, width: isMobile ? '100%' : 'auto' }}>
         {currentDate} | 종료일 {config?.endDate} | <span style={{ color: theme.up }}>{playbackSpeed}일/초</span>
       </div>
     </div>

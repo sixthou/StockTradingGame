@@ -435,6 +435,7 @@ export function ChartPanel() {
           flexDirection: 'column',
           height: '100%',
           minHeight: 0,
+          overflow: 'hidden',
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
@@ -472,7 +473,7 @@ export function ChartPanel() {
           </div>
         )}
 
-        <div ref={chartAreaRef} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, gap: 6 }}>
+        <div ref={chartAreaRef} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, gap: 6, overflow: 'hidden' }}>
           <div style={{ height: panelPixels.main, minHeight: 0 }}>
             <div ref={mainContainerRef} style={{ width: '100%', height: '100%' }} />
           </div>
@@ -485,7 +486,7 @@ export function ChartPanel() {
           )}
 
           {indicators.rsi && (
-            <div style={{ height: panelPixels.rsi, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+            <div style={{ height: panelPixels.rsi, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
               <div style={{ fontSize: 10, color: theme.text.muted, marginBottom: 4 }}>RSI 14</div>
               <div ref={rsiContainerRef} style={{ width: '100%', flex: 1, minHeight: 0 }} />
             </div>
@@ -506,7 +507,7 @@ export function ChartPanel() {
           )}
 
           {indicators.macd && (
-            <div style={{ height: panelPixels.macd, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+            <div style={{ height: panelPixels.macd, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
               <div style={{ fontSize: 10, color: theme.text.muted, marginBottom: 4 }}>MACD 12, 26, 9</div>
               <div ref={macdContainerRef} style={{ width: '100%', flex: 1, minHeight: 0 }} />
             </div>
