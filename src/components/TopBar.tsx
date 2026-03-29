@@ -3,7 +3,11 @@ import { useGameStore } from '../state/gameStore';
 import { formatUsd } from '../utils/currency';
 import { useIsMobile } from '../hooks/useIsMobile';
 
-export function TopBar() {
+interface TopBarProps {
+  compact?: boolean;
+}
+
+export function TopBar({ compact = false }: TopBarProps) {
   const isMobile = useIsMobile();
   const config = useGameStore((s) => s.config);
   const currentDate = useGameStore((s) => s.currentDate);
@@ -29,22 +33,23 @@ export function TopBar() {
       flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 8 : 12,
       background: theme.bg.panel, padding: '8px 12px', borderRadius: theme.radius,
       border: `1px solid ${theme.border}`,
+      minHeight: compact ? 88 : undefined,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <span style={{ fontWeight: 600, fontSize: 13 }}>{config?.stockSymbol ?? ''}</span>
+        <span style={{ fontWeight: 600, fontSize: compact ? 12 : 13 }}>{config?.stockSymbol ?? ''}</span>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ color: isUp ? theme.up : theme.down, fontSize: 15, fontWeight: 600 }}>
+        <span style={{ color: isUp ? theme.up : theme.down, fontSize: compact ? 13 : 15, fontWeight: 600 }}>
           {formatUsd(currentPrice)}
         </span>
         <span style={{
           background: isUp ? '#1b3a2a' : '#3d1b1b', color: isUp ? theme.up : theme.down,
-          padding: '2px 6px', borderRadius: 4, fontSize: 10,
+          padding: '2px 6px', borderRadius: 4, fontSize: compact ? 9 : 10,
         }}>
           {isUp ? '+' : ''}{change.toFixed(2)}%
         </span>
       </div>
-      <div style={{ color: theme.text.muted, fontSize: 10, width: isMobile ? '100%' : 'auto' }}>
+      <div style={{ color: theme.text.muted, fontSize: compact ? 9 : 10, width: isMobile ? '100%' : 'auto' }}>
         {currentDate} | 종료일 {config?.endDate} | <span style={{ color: theme.up }}>{playbackSpeed}일/초</span>
       </div>
     </div>

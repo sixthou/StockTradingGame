@@ -323,33 +323,31 @@ export function GameScreen() {
   }
 
   return (
-    <div style={{ padding: 4, display: 'flex', flexDirection: 'column', gap: 4, height: isMobile ? 'auto' : '100vh', minHeight: '100vh', boxSizing: 'border-box' }}>
-      <TopBar />
+    <div style={{ padding: 4, display: 'flex', flexDirection: 'column', gap: 4, height: '100vh', minHeight: '100vh', boxSizing: 'border-box', overflow: 'hidden' }}>
+      {isMobile ? (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
+          <TopBar compact />
+          <PortfolioPanel compact />
+        </div>
+      ) : (
+        <TopBar />
+      )}
 
-      <div style={{ display: 'flex', gap: 4, flex: 1, overflow: isMobile ? 'visible' : 'hidden', flexDirection: isMobile ? 'column' : 'row', paddingBottom: isMobile ? 300 : 0 }}>
-        <div style={{ flex: isMobile ? 'none' : 3, display: 'flex', flexDirection: 'column', gap: 4, height: isMobile ? '56vh' : 'auto', minHeight: isMobile ? 360 : 0, maxHeight: isMobile ? 620 : 'none' }}>
+      <div style={{ display: 'flex', gap: 4, flex: 1, overflow: 'hidden', flexDirection: isMobile ? 'column' : 'row', minHeight: 0 }}>
+        <div style={{ flex: isMobile ? 1 : 3, display: 'flex', flexDirection: 'column', gap: 4, minHeight: 0 }}>
           <ChartPanel />
         </div>
 
         <div style={{ flex: isMobile ? 'none' : 1, display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr', gap: 4, minWidth: isMobile ? 0 : 200 }}>
-          <PortfolioPanel />
-          <EventPanel />
+          {!isMobile && <PortfolioPanel />}
+          {!isMobile && <EventPanel />}
           {!isMobile && <TradePanel />}
         </div>
       </div>
 
       {!isMobile && <TimeControls onNextDay={handleNextDay} onEndGame={handleEndGame} isLoadingMore={isLoadingMore} />}
       {isMobile && (
-        <div style={{
-          position: 'fixed',
-          left: 4,
-          right: 4,
-          bottom: 4,
-          zIndex: 20,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 4,
-        }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flexShrink: 0 }}>
           <TimeControls onNextDay={handleNextDay} onEndGame={handleEndGame} isLoadingMore={isLoadingMore} />
           <TradePanel compact />
         </div>

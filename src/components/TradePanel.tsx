@@ -55,20 +55,20 @@ export function TradePanel({ compact = false }: TradePanelProps) {
     executeMarketTrade(type, q);
   };
 
-  const buttonPadding = compact ? 10 : 6;
-  const actionFontSize = compact ? 12 : 11;
-  const subActionFontSize = compact ? 11 : 10;
+  const buttonPadding = compact ? 7 : 6;
+  const actionFontSize = compact ? 11 : 11;
+  const subActionFontSize = compact ? 10 : 10;
 
   return (
     <div style={{
-      background: theme.bg.panel, padding: 10, borderRadius: theme.radius,
+      background: theme.bg.panel, padding: compact ? 8 : 10, borderRadius: theme.radius,
       border: `1px solid ${theme.border}`, color: theme.text.secondary,
       boxShadow: compact ? '0 -8px 24px rgba(0, 0, 0, 0.28)' : 'none',
     }}>
-      <div style={{ fontSize: 10, color: theme.accent, fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '1px' }}>
+      <div style={{ fontSize: compact ? 9 : 10, color: theme.accent, fontWeight: 600, marginBottom: compact ? 4 : 6, textTransform: 'uppercase', letterSpacing: '1px' }}>
         Trade
       </div>
-      <div style={{ display: 'flex', gap: 4, marginBottom: 6 }}>
+      <div style={{ display: 'flex', gap: 4, marginBottom: 4 }}>
         <button onClick={() => handleTrade('buy')} style={{
           flex: 1, background: '#238636', color: 'white', border: 'none', padding: buttonPadding, borderRadius: theme.radius, fontWeight: 600, fontSize: actionFontSize, cursor: 'pointer',
         }}>BUY</button>
@@ -76,7 +76,7 @@ export function TradePanel({ compact = false }: TradePanelProps) {
           flex: 1, background: '#da3633', color: 'white', border: 'none', padding: buttonPadding, borderRadius: theme.radius, fontWeight: 600, fontSize: actionFontSize, cursor: 'pointer',
         }}>SELL</button>
       </div>
-      <div style={{ display: 'flex', gap: 4, marginBottom: 6 }}>
+      <div style={{ display: 'flex', gap: 4, marginBottom: 4 }}>
         <button onClick={() => executeMarketTrade('buy', maxBuy)} style={{
           flex: 1, background: theme.bg.primary, color: theme.up, border: `1px solid ${theme.border}`, padding: buttonPadding, borderRadius: theme.radius, fontWeight: 600, fontSize: subActionFontSize, cursor: 'pointer',
         }}>MAX BUY</button>
@@ -91,7 +91,7 @@ export function TradePanel({ compact = false }: TradePanelProps) {
         onChange={(e) => setQty(e.target.value)}
         style={{
           width: '100%', background: theme.bg.primary, border: `1px solid ${theme.border}`,
-          color: theme.text.primary, padding: compact ? '8px 10px' : '4px 8px', borderRadius: 4, fontSize: compact ? 12 : 10, marginBottom: 4, boxSizing: 'border-box',
+          color: theme.text.primary, padding: compact ? '6px 8px' : '4px 8px', borderRadius: 4, fontSize: compact ? 11 : 10, marginBottom: 4, boxSizing: 'border-box',
         }}
       />
       <input
@@ -100,11 +100,11 @@ export function TradePanel({ compact = false }: TradePanelProps) {
         onChange={(e) => setMemo(e.target.value)}
         style={{
           width: '100%', background: theme.bg.primary, border: `1px solid ${theme.border}`,
-          color: theme.text.primary, padding: compact ? '8px 10px' : '4px 8px', borderRadius: 4, fontSize: compact ? 12 : 10, boxSizing: 'border-box',
+          color: theme.text.primary, padding: compact ? '6px 8px' : '4px 8px', borderRadius: 4, fontSize: compact ? 11 : 10, boxSizing: 'border-box',
         }}
       />
       {error && <div style={{ color: theme.down, fontSize: 10, marginTop: 4 }}>{error}</div>}
-      <div style={{ borderTop: `1px solid ${theme.border}`, paddingTop: 6, marginTop: 6, fontSize: 10, color: theme.text.muted }}>
+      <div style={{ borderTop: `1px solid ${theme.border}`, paddingTop: compact ? 4 : 6, marginTop: compact ? 4 : 6, fontSize: compact ? 9 : 10, color: theme.text.muted }}>
         <div style={{ marginBottom: 3 }}>
           Available: <span style={{ color: theme.text.secondary }}>{formatUsd(portfolio.cash)}</span>
         </div>

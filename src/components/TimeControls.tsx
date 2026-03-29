@@ -24,14 +24,14 @@ export function TimeControls({ onNextDay, onEndGame, isLoadingMore }: Props) {
     <div style={{
       display: 'flex', justifyContent: 'center', alignItems: 'center', gap: isMobile ? 8 : 16,
       flexWrap: isMobile ? 'nowrap' : 'wrap',
-      background: theme.bg.panel, padding: 8, borderRadius: theme.radius,
+      background: theme.bg.panel, padding: isMobile ? 6 : 8, borderRadius: theme.radius,
       border: `1px solid ${theme.border}`,
       overflowX: 'auto',
     }}>
       <button
         onClick={() => dayIndex > 0 && setDayIndex(dayIndex - 1)}
         disabled={dayIndex === 0 || isLoadingMore}
-        style={{ background: 'none', border: 'none', color: dayIndex > 0 ? theme.text.secondary : theme.text.muted, cursor: 'pointer', fontSize: 12, minWidth: 'auto', whiteSpace: 'nowrap', flexShrink: 0 }}
+        style={{ background: 'none', border: 'none', color: dayIndex > 0 ? theme.text.secondary : theme.text.muted, cursor: 'pointer', fontSize: isMobile ? 11 : 12, minWidth: 'auto', whiteSpace: 'nowrap', flexShrink: 0, padding: 0 }}
       >
         {isMobile ? '◀ Prev' : '◀ Prev Day'}
       </button>
@@ -41,7 +41,7 @@ export function TimeControls({ onNextDay, onEndGame, isLoadingMore }: Props) {
         disabled={isLoadingMore}
         style={{
           background: theme.accent, color: 'white', border: 'none',
-          padding: '6px 12px', borderRadius: theme.radius, cursor: 'pointer', fontSize: 12, minWidth: 'auto', whiteSpace: 'nowrap', flexShrink: 0,
+          padding: isMobile ? '5px 10px' : '6px 12px', borderRadius: theme.radius, cursor: 'pointer', fontSize: isMobile ? 11 : 12, minWidth: 'auto', whiteSpace: 'nowrap', flexShrink: 0,
         }}
       >
         {isPlaying ? '⏸ Pause' : '▶ Auto'}
@@ -53,7 +53,7 @@ export function TimeControls({ onNextDay, onEndGame, isLoadingMore }: Props) {
             key={speed}
             onClick={() => setPlaybackSpeed(speed)}
             style={{
-              background: 'none', border: 'none', cursor: 'pointer', fontSize: 12,
+              background: 'none', border: 'none', cursor: 'pointer', fontSize: isMobile ? 11 : 12, padding: 0,
               color: playbackSpeed === speed ? theme.up : theme.text.muted,
               fontWeight: playbackSpeed === speed ? 700 : 400,
             }}
@@ -66,7 +66,7 @@ export function TimeControls({ onNextDay, onEndGame, isLoadingMore }: Props) {
       <button
         onClick={onNextDay}
         disabled={dailyCandles.length === 0 || isLoadingMore}
-        style={{ background: 'none', border: 'none', color: isLoadingMore ? theme.text.muted : theme.text.secondary, cursor: 'pointer', fontSize: 12, minWidth: 'auto', whiteSpace: 'nowrap', flexShrink: 0 }}
+        style={{ background: 'none', border: 'none', color: isLoadingMore ? theme.text.muted : theme.text.secondary, cursor: 'pointer', fontSize: isMobile ? 11 : 12, minWidth: 'auto', whiteSpace: 'nowrap', flexShrink: 0, padding: 0 }}
       >
         {isLoadingMore ? '불러오는 중...' : isMobile ? 'Next ▶' : 'Next Day ▶'}
       </button>
@@ -75,7 +75,7 @@ export function TimeControls({ onNextDay, onEndGame, isLoadingMore }: Props) {
         onClick={onEndGame}
         style={{
           background: theme.bg.primary, color: theme.text.primary, border: `1px solid ${theme.border}`,
-          padding: '6px 12px', borderRadius: theme.radius, cursor: 'pointer', fontSize: 12, minWidth: 'auto', whiteSpace: 'nowrap', flexShrink: 0,
+          padding: isMobile ? '5px 10px' : '6px 12px', borderRadius: theme.radius, cursor: 'pointer', fontSize: isMobile ? 11 : 12, minWidth: 'auto', whiteSpace: 'nowrap', flexShrink: 0,
         }}
       >
         {isMobile ? 'End' : '게임 종료'}

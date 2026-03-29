@@ -3,7 +3,11 @@ import { useGameStore } from '../state/gameStore';
 import { calcPE, calcPBR } from '../engine/fundamentals';
 import { formatSignedUsd, formatUsd } from '../utils/currency';
 
-export function PortfolioPanel() {
+interface PortfolioPanelProps {
+  compact?: boolean;
+}
+
+export function PortfolioPanel({ compact = false }: PortfolioPanelProps) {
   const portfolio = useGameStore((s) => s.portfolio);
   const config = useGameStore((s) => s.config);
   const currentDate = useGameStore((s) => s.currentDate);
@@ -41,19 +45,20 @@ export function PortfolioPanel() {
     salaryCountdown = `D-${diff}`;
   }
 
-  const rowStyle = { fontSize: 11, marginBottom: 3, display: 'flex', justifyContent: 'space-between' };
+  const rowStyle = { fontSize: compact ? 10 : 11, marginBottom: 3, display: 'flex', justifyContent: 'space-between' };
 
   return (
     <div style={{
       background: theme.bg.panel, padding: 10, borderRadius: theme.radius,
       border: `1px solid ${theme.border}`, color: theme.text.secondary,
+      minHeight: compact ? 88 : undefined,
     }}>
-      <div style={{ fontSize: 10, color: theme.accent, fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '1px' }}>
+      <div style={{ fontSize: compact ? 9 : 10, color: theme.accent, fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '1px' }}>
         Portfolio
       </div>
       <div style={rowStyle}><span>Cash</span><span>{formatUsd(portfolio.cash)}</span></div>
       <div style={rowStyle}><span>Holdings</span><span>{formatUsd(holdingsValue)}</span></div>
-      {portfolio.holdings.qty > 0 && (
+      {!compact && portfolio.holdings.qty > 0 && (
         <div style={{ ...rowStyle, fontSize: 10, color: theme.text.muted, paddingLeft: 8 }}>
           <span>{portfolio.holdings.qty}주 @ {formatUsd(portfolio.holdings.avgPrice)}</span>
           <span style={{ color: holdingReturn >= 0 ? theme.up : theme.down }}>
@@ -65,7 +70,8 @@ export function PortfolioPanel() {
         <span>P&L</span>
         <span>{formatSignedUsd(pnl)} ({isProfit ? '+' : ''}{pnlPercent.toFixed(2)}%)</span>
       </div>
-      <div style={{ borderTop: `1px solid ${theme.border}`, paddingTop: 6, marginTop: 6, fontSize: 10, color: theme.text.muted }}>
+      {!compact && (
+        <div style={{ borderTop: `1px solid ${theme.border}`, paddingTop: 6, marginTop: 6, fontSize: 10, color: theme.text.muted }}>
         <div style={{ ...rowStyle, fontSize: 10 }}><span>Invested</span><span style={{ color: theme.text.secondary }}>{formatUsd(portfolio.totalInvested)}</span></div>
         <div style={{ ...rowStyle, fontSize: 10 }}><span>P/E</span><span style={{ color: theme.text.secondary }}>{pe !== null ? pe.toFixed(1) : '—'}</span></div>
         <div style={{ ...rowStyle, fontSize: 10 }}><span>PBR</span><span style={{ color: theme.text.secondary }}>{pbr !== null ? pbr.toFixed(2) : '—'}</span></div>
@@ -73,7 +79,8 @@ export function PortfolioPanel() {
         {salaryCountdown && (
           <div style={{ ...rowStyle, fontSize: 10 }}><span>Salary</span><span style={{ color: theme.text.secondary }}>{salaryCountdown}</span></div>
         )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
