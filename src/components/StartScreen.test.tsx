@@ -90,4 +90,38 @@ describe('StartScreen US-only symbol support', () => {
     expect(screen.getByRole('button', { name: '검색' })).toBeDisabled();
     expect(useGameStore.getState().screen).toBe('start');
   });
+
+  it('resets end date to one year later when start date changes', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-03-29T12:00:00Z'));
+
+    render(<StartScreen />);
+
+    const [startInput, endInput] = screen.getAllByDisplayValue(/\d{4}-\d{2}-\d{2}/) as HTMLInputElement[];
+    fireEvent.change(startInput, { target: { value: '2025-02-10' } });
+
+    expect(startInput.value).toBe('2025-02-10');
+    expect(endInput.value).toBe('2026-02-10');
+    vi.useRealTimers();
+  });
+
+  it('random button picks a date before today and resets end date to one year later', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-03-29T12:00:00Z'));
+    vi.spyOn(Math, 'random').mockReturnValue(0.5);
+
+    render(<StartScreen />);
+
+    fireEvent.click(screen.getByRole('button', { name: '랜덤' }));
+
+    const [startInput, endInput] = screen.getAllByDisplayValue(/\d{4}-\d{2}-\d{2}/) as HTMLInputElement[];
+    const [year, month, day] = startInput.value.split('-').map(Number);
+    const expectedEnd = new Date(year + 1, month - 1, day);
+    const expectedEndValue = `${expectedEnd.getFullYear()}-${String(expectedEnd.getMonth() + 1).padStart(2, '0')}-${String(expectedEnd.getDate()).padStart(2, '0')}`;
+
+    expect(startInput.value >= '2016-03-28').toBe(true);
+    expect(startInput.value <= '2026-03-28').toBe(true);
+    expect(endInput.value).toBe(expectedEndValue);
+    vi.useRealTimers();
+  });
 });

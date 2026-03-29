@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import { theme } from '../styles/theme';
 import { useGameStore } from '../state/gameStore';
 import { isSupportedUsSymbol, searchSymbol, SymbolSearchResult } from '../data/yahooFinance';
@@ -8,14 +8,57 @@ import { formatUsd, parseWholeDollarInput } from '../utils/currency';
 
 const TWELVE_DATA_KEY_STORAGE_KEY = 'stock-trading-game-twelve-data-key';
 
+function formatDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function parseDate(value: string): Date {
+  const [year, month, day] = value.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function addOneYear(date: string): string {
+  const value = parseDate(date);
+  value.setFullYear(value.getFullYear() + 1);
+  return formatDate(value);
+}
+
+function subtractYears(date: Date, years: number): Date {
+  const value = new Date(date);
+  value.setFullYear(value.getFullYear() - years);
+  return value;
+}
+
+function clampEndDate(start: string, latestAllowedDate: string): string {
+  const nextYear = addOneYear(start);
+  return nextYear <= latestAllowedDate ? nextYear : latestAllowedDate;
+}
+
+function randomDateBetween(start: Date, end: Date): string {
+  const startMs = start.getTime();
+  const endMs = end.getTime();
+  const randomMs = startMs + Math.floor(Math.random() * (endMs - startMs + 1));
+  return formatDate(new Date(randomMs));
+}
+
 export function StartScreen() {
   const startGame = useGameStore((s) => s.startGame);
+  const today = useMemo(() => new Date(), []);
+  const latestPlayableDate = useMemo(() => {
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    return formatDate(yesterday);
+  }, [today]);
+  const earliestRandomDate = useMemo(() => formatDate(subtractYears(new Date(`${latestPlayableDate}T00:00:00`), 10)), [latestPlayableDate]);
   const [mode, setMode] = useState<'free' | 'challenge'>('free');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SymbolSearchResult[]>([]);
   const [selectedSymbol, setSelectedSymbol] = useState('');
   const [startDate, setStartDate] = useState('2024-01-02');
-  const [endDate, setEndDate] = useState('2024-12-31');
+  const [endDate, setEndDate] = useState(() => clampEndDate('2024-01-02', latestPlayableDate));
   const [twelveDataApiKey, setTwelveDataApiKey] = useState(() => {
     try {
       return localStorage.getItem(TWELVE_DATA_KEY_STORAGE_KEY) ?? '';
@@ -30,6 +73,8 @@ export function StartScreen() {
   const [searching, setSearching] = useState(false);
   const [symbolError, setSymbolError] = useState('');
   const [apiKeyError, setApiKeyError] = useState('');
+  const startDateInputRef = useRef<HTMLInputElement | null>(null);
+  const endDateInputRef = useRef<HTMLInputElement | null>(null);
 
   const persistApiKey = useCallback((apiKey: string) => {
     try {
@@ -108,6 +153,29 @@ export function StartScreen() {
       salaryDay,
       mode: 'free',
     });
+  };
+
+  const handleStartDateChange = (nextStartDate: string) => {
+    setStartDate(nextStartDate);
+    setEndDate(clampEndDate(nextStartDate, latestPlayableDate));
+  };
+
+  const handleRandomDate = () => {
+    const nextStartDate = randomDateBetween(
+      parseDate(earliestRandomDate),
+      parseDate(latestPlayableDate),
+    );
+    handleStartDateChange(nextStartDate);
+  };
+
+  const openDatePicker = (input: HTMLInputElement | null) => {
+    if (!input) return;
+    if (typeof input.showPicker === 'function') {
+      input.showPicker();
+      return;
+    }
+    input.focus();
+    input.click();
   };
 
   const inputStyle = {
@@ -278,12 +346,43 @@ export function StartScreen() {
           {/* Start Date */}
           <div>
             <label style={labelStyle}>시작일</label>
-            <input type="date" style={inputStyle} value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input
+                ref={startDateInputRef}
+                type="date"
+                style={{ ...inputStyle, flex: 1 }}
+                value={startDate}
+                min={earliestRandomDate}
+                max={latestPlayableDate}
+                onChange={(e) => handleStartDateChange(e.target.value)}
+                onClick={() => openDatePicker(startDateInputRef.current)}
+                onFocus={() => openDatePicker(startDateInputRef.current)}
+              />
+              <button
+                type="button"
+                onClick={handleRandomDate}
+                style={{ background: theme.accent, color: 'white', border: 'none', padding: '8px 12px', borderRadius: theme.radius, cursor: 'pointer' }}
+              >
+                랜덤
+              </button>
+            </div>
           </div>
 
           <div>
             <label style={labelStyle}>종료일</label>
-            <input type="date" style={inputStyle} value={endDate} min={startDate} onChange={(e) => setEndDate(e.target.value)} />
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input
+                ref={endDateInputRef}
+                type="date"
+                style={{ ...inputStyle, flex: 1 }}
+                value={endDate}
+                min={startDate}
+                max={latestPlayableDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                onClick={() => openDatePicker(endDateInputRef.current)}
+                onFocus={() => openDatePicker(endDateInputRef.current)}
+              />
+            </div>
           </div>
 
           {/* Initial Cash */}
