@@ -53,4 +53,14 @@ describe('TradePanel', () => {
 
     expect(screen.getByText('$1,000')).toBeInTheDocument();
   });
+
+  it('keeps auto play running after a trade executes', () => {
+    useGameStore.getState().setPlaying(true);
+
+    render(<TradePanel />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'MAX BUY' }));
+
+    expect(useGameStore.getState().isPlaying).toBe(true);
+  });
 });

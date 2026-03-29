@@ -14,8 +14,6 @@ export function TradePanel({ compact = false }: TradePanelProps) {
 
   const executeBuy = useGameStore((s) => s.executeBuy);
   const executeSell = useGameStore((s) => s.executeSell);
-  const isPlaying = useGameStore((s) => s.isPlaying);
-  const setPlaying = useGameStore((s) => s.setPlaying);
   const dailyCandles = useGameStore((s) => s.dailyCandles);
   const dayIndex = useGameStore((s) => s.dayIndex);
   const portfolio = useGameStore((s) => s.portfolio);
@@ -33,8 +31,6 @@ export function TradePanel({ compact = false }: TradePanelProps) {
       return;
     }
     setError('');
-
-    if (isPlaying) setPlaying(false);
 
     try {
       if (type === 'buy') {
