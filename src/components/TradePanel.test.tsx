@@ -63,4 +63,22 @@ describe('TradePanel', () => {
 
     expect(useGameStore.getState().isPlaying).toBe(true);
   });
+
+  it('keeps auto play running after max sell executes', () => {
+    useGameStore.setState((state) => ({
+      ...state,
+      isPlaying: true,
+      portfolio: {
+        ...state.portfolio,
+        cash: 300,
+        holdings: { qty: 7, avgPrice: 95 },
+      },
+    }));
+
+    render(<TradePanel />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'MAX SELL' }));
+
+    expect(useGameStore.getState().isPlaying).toBe(true);
+  });
 });
